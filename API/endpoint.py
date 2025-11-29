@@ -1,71 +1,56 @@
-import csv
-from pathlib import Path
 from flask import Flask, jsonify
-from movie import Movie
-from movies_service import load_movies, load_links, load_ratings, load_tags
+from database import SessionLocal
+from models import Movie, Link, Rating, Tag
 
 
 app = Flask(__name__)
 
-class Movie:
-    def __init__(self, movieId: str, title: str, genres: str):
-        self.movieId = movieId
-        self.title = title
-        self.genres = genres
-
-def load_movies() -> list[dict]:
-    movies_path = Path(__file__).parent / "data" / "movies.csv"
-    movies: list[dict] = []
-
-    with movies_path.open(encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-
-        for row in reader:
-            movie = Movie(
-                movieId=row["movieId"],
-                title=row["title"],
-                genres=row["genres"])
-            movies.append(movie.__dict__)
-
-    return movies
+def row_to_dict(obj) -> dict:
+    return {column.name: getattr(obj, column.name) for column in obj.__table__.columns}
 
 @app.get("/hello")
 def hello():
     return jsonify({"hello": "world"}), 200
 
-
 @app.get("/movies")
-def movies():
-    data = load_movies()
-    return jsonify(data), 200
-
-@app.get("/hello")
-def hello():
-    return jsonify({"hello": "world"}), 200
-
-
-@app.get("/movies")
-def movies():
-    data = load_movies()
-    return jsonify(data), 200
-
+def get_movies():
+    session = SessionLocal()
+    try:
+        movies = session.query(Movie).all()
+        data = [row_to_dict(m) for m in movies]
+        return jsonify(data), 200
+    finally:
+        session.close()
 
 @app.get("/links")
-def links():
-    data = load_links()
-    return jsonify(data), 200
-
+def get_links():
+    session = SessionLocal()
+    try:
+        links = session.query(Link).all()
+        data = [row_to_dict(l) for l in links]
+        return jsonify(data), 200
+    finally:
+        session.close()
 
 @app.get("/ratings")
-def ratings():
-    data = load_ratings()
-    return jsonify(data), 200
-
+def get_ratings():
+    session = SessionLocal()
+    try:
+        ratings = session.query(Rating).all()
+        data = [row_to_dict(r) for r in ratings]
+        return jsonify(data), 200
+    finally:
+        session.close()
 
 @app.get("/tags")
-def tags():
-    data = load_tags()
-    return jsonify(data), 200
+def get_tags():
+    session = SessionLocal()
+    try:
+        tags = session.query(Tag).all()
+        data = [row_to_dict(t) for t in tags]
+        return jsonify(data), 200
+    finally:
+        session.close()
 
 if __name__ == "__main__":
     app.run(debug=True)
