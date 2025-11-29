@@ -1,6 +1,8 @@
 import csv
 from pathlib import Path
 from flask import Flask, jsonify
+from movie import Movie
+
 
 app = Flask(__name__)
 
@@ -10,7 +12,7 @@ class Movie:
         self.title = title
         self.genres = genres
 
-def load_movies_from_csv() -> list[dict]:
+def load_movies() -> list[dict]:
     movies_path = Path(__file__).parent / "data" / "movies.csv"
     movies: list[dict] = []
 
@@ -34,7 +36,7 @@ def hello():
 
 @app.get("/movies")
 def movies():
-    data = load_movies_from_csv()
+    data = load_movies()
     return jsonify(data), 200
 
 
