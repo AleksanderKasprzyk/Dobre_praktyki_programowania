@@ -9,6 +9,11 @@ class Movie(Base):
     title = Column(String)
     genres = Column(String)
 
+    def as_dict(self) -> dict:
+        return {
+            "movieId": self.movieId,
+            "title": self.title,
+            "genres": self.genres}
 
 class Link(Base):
     __tablename__ = "links"
@@ -17,6 +22,11 @@ class Link(Base):
     imdbId = Column(String)
     tmdbId = Column(String)
 
+    def as_dict(self) -> dict:
+        return {
+            "movieId": self.movieId,
+            "imdbId": self.imdbId,
+            "tmdbId": self.tmdbId}
 
 class Rating(Base):
     __tablename__ = "ratings"
@@ -26,6 +36,12 @@ class Rating(Base):
     rating = Column(Float)
     timestamp = Column(Integer)
 
+    def as_dict(self) -> dict:
+        return {
+            "userId": self.userId,
+            "movieId": self.movieId,
+            "rating": self.rating,
+            "timestamp": self.timestamp}
 
 class Tag(Base):
     __tablename__ = "tags"
@@ -34,3 +50,10 @@ class Tag(Base):
     movieId = Column(Integer)
     tag = Column(String)
     timestamp = Column(Integer)
+
+    def as_dict(self) -> dict:
+        return {
+            "userId": self.userId,
+            "movieId": self.movieId,
+            "tag": self.tag,
+            "timestamp": self.timestamp}

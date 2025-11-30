@@ -1,6 +1,5 @@
 import csv
 from pathlib import Path
-
 from database import SessionLocal
 from models import Movie, Link, Rating, Tag
 
@@ -17,8 +16,7 @@ def load_movies():
             movie = Movie(
                 movieId=row["movieId"],
                 title=row["title"],
-                genres=row["genres"]
-            )
+                genres=row["genres"])
             session.add(movie)
 
     session.commit()
@@ -35,8 +33,7 @@ def load_links():
             link = Link(
                 movieId=row["movieId"],
                 imdbId=row["imdbId"],
-                tmdbId=row["tmdbId"]
-            )
+                tmdbId=row["tmdbId"])
             session.add(link)
 
     session.commit()
@@ -54,8 +51,7 @@ def load_ratings():
                 userId=row["userId"],
                 movieId=row["movieId"],
                 rating=row["rating"],
-                timestamp=row["timestamp"]
-            )
+                timestamp=row["timestamp"])
             session.add(rating)
 
     session.commit()
@@ -73,8 +69,7 @@ def load_tags():
                 userId=row["userId"],
                 movieId=row["movieId"],
                 tag=row["tag"],
-                timestamp=row["timestamp"]
-            )
+                timestamp=row["timestamp"])
             session.add(tag)
 
     session.commit()
