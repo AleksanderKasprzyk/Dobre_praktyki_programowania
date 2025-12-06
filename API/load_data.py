@@ -1,7 +1,9 @@
 import csv
 from pathlib import Path
-from database import SessionLocal
-from models import Movie, Link, Rating, Tag
+from API.models_user import User
+from API.database import SessionLocal
+from API.models import Movie, Link, Rating, Tag
+import bcrypt
 
 DATA_DIR = Path(__file__).parent / "data"
 
@@ -75,10 +77,21 @@ def load_tags():
     session.commit()
     session.close()
 
+def load_users():
+    session = SessionLocal()
+    password = "secret123"
+    pw_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+
+    user = User(username="testuser", password_hash=pw_hash, role="ROLE_USER")
+    session.add(user)
+    session.commit()
+    session.close()
+    print("Dodano użytkownika testowego")
 
 if __name__ == "__main__":
     load_movies()
     load_links()
     load_ratings()
     load_tags()
+    load_users()
     print("Załadowano dane do bazy!")

@@ -1,19 +1,136 @@
+from functools import wraps
 from flask import Flask, jsonify, request
-from database import SessionLocal
-from models import Movie, Link, Rating, Tag
+from API.models_user import User
+from API.database import SessionLocal
+from API.models import Movie, Link, Rating, Tag
+import bcrypt
+import jwt
+from datetime import datetime, timedelta
+
 
 app = Flask(__name__)
+
+SECRET_KEY = "super_secret_key"
+ALGORITHM = "HS256"
+
+def verify_token():
+    auth = request.headers.get("Authorization", None)
+
+    if not auth:
+        return None, ("Missing Authorization header", 401)
+
+    if not auth.startswith("Bearer "):
+        return None, ("Invalid Authorization format", 401)
+
+    token = auth.replace("Bearer ", "")
+
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload, None
+    except jwt.ExpiredSignatureError:
+        return None, ("Token expired", 401)
+    except jwt.InvalidTokenError:
+        return None, ("Invalid token", 401)
+
+
+def jwt_required(func):
+    def wrapper(*args, **kwargs):
+        payload, error = verify_token()
+        if error:
+            msg, code = error
+            return jsonify({"error": msg}), code
+
+        request.user = payload
+        return func(*args, **kwargs)
+
+    wrapper.__name__ = func.__name__
+    return wrapper
+
+def admin_required(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        user = getattr(request, "user", None)
+        if not user:
+            return jsonify({"error": "Unauthorized"}), 401
+
+        if user.get("role") != "ROLE_ADMIN":
+            return jsonify({"error": "Forbidden"}), 403
+
+        return func(*args, **kwargs)
+
+    return wrapper
 
 def to_dict(obj) -> dict:
     if hasattr(obj, "as_dict"):
         return obj.as_dict()
     return {column.name: getattr(obj, column.name) for column in obj.__table__.columns}
 
+@app.post("/login")
+def login():
+    data = request.json or {}
+    username = data.get("username")
+    password = data.get("password")
+
+    if not username or not password:
+        return jsonify({"error": "Missing username or password"}), 400
+
+    session = SessionLocal()
+    try:
+        user = session.query(User).filter_by(username=username).first()
+        if not user:
+            return jsonify({"error": "Invalid credentials"}), 401
+
+        if not bcrypt.checkpw(password.encode(), user.password_hash.encode()):
+            return jsonify({"error": "Invalid credentials"}), 401
+
+        payload = {
+            "sub": user.username,
+            "role": user.role,
+            "iat": datetime.utcnow(),
+            "exp": datetime.utcnow() + timedelta(hours=1),
+        }
+
+        token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+        return jsonify({"access_token": token, "type": "bearer"}), 200
+    finally:
+        session.close()
+
+
+@app.post("/users")
+def create_user():
+    data = request.json or {}
+    username = data.get("username")
+    password = data.get("password")
+    role = data.get("role", "ROLE_USER")
+
+    if not username or not password:
+        return jsonify({"error": "Missing username or password"}), 400
+
+    session = SessionLocal()
+    try:
+        # czy taki user już istnieje
+        existing = session.query(User).filter_by(username=username).first()
+        if existing:
+            return jsonify({"error": "User already exists"}), 400
+
+        pw_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+        user = User(username=username, password_hash=pw_hash, role=role)
+        session.add(user)
+        session.commit()
+
+        return jsonify({"id": user.id, "username": user.username, "role": user.role}), 201
+    finally:
+        session.close()
+
+
+
 @app.get("/hello")
+@jwt_required
 def hello():
     return jsonify({"hello": "world"}), 200
 
 @app.get("/movies")
+@jwt_required
 def get_movies():
     session = SessionLocal()
     try:
@@ -24,6 +141,7 @@ def get_movies():
 
 
 @app.get("/movies/<int:movie_id>")
+@jwt_required
 def get_movie(movie_id: int):
     session = SessionLocal()
     try:
@@ -35,6 +153,8 @@ def get_movie(movie_id: int):
         session.close()
 
 @app.post("/movies")
+@jwt_required
+@admin_required
 def create_movie():
     session = SessionLocal()
     data = request.json or {}
@@ -53,6 +173,8 @@ def create_movie():
 
 
 @app.put("/movies/<int:movie_id>")
+@jwt_required
+@admin_required
 def update_movie(movie_id: int):
     session = SessionLocal()
     data = request.json or {}
@@ -73,6 +195,8 @@ def update_movie(movie_id: int):
 
 
 @app.delete("/movies/<int:movie_id>")
+@jwt_required
+@admin_required
 def delete_movie(movie_id: int):
     session = SessionLocal()
     movie = session.query(Movie).get(movie_id)
@@ -88,6 +212,7 @@ def delete_movie(movie_id: int):
     return jsonify({"status": "deleted"}), 200
 
 @app.get("/links")
+@jwt_required
 def get_links():
     session = SessionLocal()
     try:
@@ -97,6 +222,7 @@ def get_links():
         session.close()
 
 @app.get("/links/<int:movie_id>")
+@jwt_required
 def get_link(movie_id: int):
     session = SessionLocal()
     try:
@@ -109,6 +235,8 @@ def get_link(movie_id: int):
 
 
 @app.post("/links")
+@jwt_required
+@admin_required
 def create_link():
     session = SessionLocal()
     data = request.json or {}
@@ -126,6 +254,8 @@ def create_link():
     return jsonify(link.as_dict()), 201
 
 @app.put("/links/<int:movie_id>")
+@jwt_required
+@admin_required
 def update_link(movie_id: int):
     session = SessionLocal()
     data = request.json or {}
@@ -145,6 +275,8 @@ def update_link(movie_id: int):
     return jsonify(link.as_dict()), 200
 
 @app.delete("/links/<int:movie_id>")
+@jwt_required
+@admin_required
 def delete_link(movie_id: int):
     session = SessionLocal()
     link = session.query(Link).get(movie_id)
@@ -159,6 +291,7 @@ def delete_link(movie_id: int):
     return jsonify({"status": "deleted"}), 200
 
 @app.get("/ratings")
+@jwt_required
 def get_ratings():
     session = SessionLocal()
     try:
@@ -168,6 +301,7 @@ def get_ratings():
         session.close()
 
 @app.get("/ratings/<int:user_id>")
+@jwt_required
 def get_rating(user_id: int):
     session = SessionLocal()
     try:
@@ -179,6 +313,7 @@ def get_rating(user_id: int):
         session.close()
 
 @app.post("/ratings")
+@jwt_required
 def create_rating():
     session = SessionLocal()
     data = request.json or {}
@@ -207,6 +342,7 @@ def create_rating():
         session.close()
 
 @app.put("/ratings/<int:user_id>")
+@jwt_required
 def update_rating(user_id: int):
     session = SessionLocal()
     data = request.json or {}
@@ -227,6 +363,7 @@ def update_rating(user_id: int):
         session.close()
 
 @app.delete("/ratings/<int:user_id>")
+@jwt_required
 def delete_rating(user_id: int):
     session = SessionLocal()
     try:
@@ -241,6 +378,7 @@ def delete_rating(user_id: int):
         session.close()
 
 @app.get("/tags")
+@jwt_required
 def get_tags():
     session = SessionLocal()
     try:
@@ -250,6 +388,8 @@ def get_tags():
         session.close()
 
 @app.get("/tags/<int:user_id>")
+@jwt_required
+@admin_required
 def get_tag(user_id: int):
     session = SessionLocal()
     try:
@@ -262,6 +402,7 @@ def get_tag(user_id: int):
 
 
 @app.post("/tags")
+@jwt_required
 def create_tag():
     session = SessionLocal()
     data = request.json or {}
@@ -292,6 +433,7 @@ def create_tag():
 
 
 @app.put("/tags/<int:user_id>")
+@jwt_required
 def update_tag(user_id: int):
     session = SessionLocal()
     data = request.json or {}
@@ -312,6 +454,8 @@ def update_tag(user_id: int):
         session.close()
 
 @app.delete("/tags/<int:user_id>")
+@jwt_required
+@admin_required
 def delete_tag(user_id: int):
     session = SessionLocal()
     try:

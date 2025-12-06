@@ -6,10 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="818a3083-386b-49b6-9f3f-fc4d6f9ec6b1" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/API/database.py" beforeDir="false" afterPath="$PROJECT_DIR$/API/database.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/create_db.py" beforeDir="false" afterPath="$PROJECT_DIR$/API/create_db.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/API/endpoint.py" beforeDir="false" afterPath="$PROJECT_DIR$/API/endpoint.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/API/load_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/API/load_data.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/API/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/API/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/movies.db" beforeDir="false" afterPath="$PROJECT_DIR$/API/movies.db" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,6 +53,7 @@
     "DefaultHtmlFileTemplate": "HTML File",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "Python tests.pytest in test_api_endpoint.py.executor": "Run",
+    "Python tests.pytest in test_auth.py.executor": "Run",
     "Python.create_db.executor": "Run",
     "Python.database.executor": "Run",
     "Python.endpoint.executor": "Run",
