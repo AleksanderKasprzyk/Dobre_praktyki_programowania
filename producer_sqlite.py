@@ -8,6 +8,5 @@ def main():
 
 
 if __name__ == "__main__":
-    # jeśli chcesz wrzucić 100 zadań jednorazowo:
     for _ in range(100):
         main()
