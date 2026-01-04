@@ -15,7 +15,6 @@ def main():
 
         task_id, status = row
         print(f"Pobrano zadanie {task_id}, status={status}")
-git branch
         update_status(task_id, "in_progress")
         print(f"Zadanie {task_id} w trakcie (30s)...")
         time.sleep(30)

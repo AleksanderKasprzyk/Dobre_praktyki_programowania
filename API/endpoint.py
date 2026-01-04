@@ -6,6 +6,7 @@ from API.models import Movie, Link, Rating, Tag
 import bcrypt
 import jwt
 from datetime import datetime, timedelta
+from rabbitmq.producer import send_task
 
 
 app = Flask(__name__)
@@ -108,7 +109,6 @@ def create_user():
 
     session = SessionLocal()
     try:
-        # czy taki user już istnieje
         existing = session.query(User).filter_by(username=username).first()
         if existing:
             return jsonify({"error": "User already exists"}), 400
@@ -468,6 +468,20 @@ def delete_tag(user_id: int):
         return jsonify({"status": "deleted"}), 200
     finally:
         session.close()
+
+
+
+@app.post("/analyze_img")
+def analyze_image():
+    data = request.json or {}
+    image_url = data.get("image_url")
+
+    if not image_url:
+        return jsonify({"error": "image_url required"}), 400
+
+    send_task(image_url)
+
+    return jsonify({"status": "queued"}), 202
 
 if __name__ == "__main__":
     app.run(debug=True)

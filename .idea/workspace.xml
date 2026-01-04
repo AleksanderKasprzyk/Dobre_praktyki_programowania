@@ -5,7 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="818a3083-386b-49b6-9f3f-fc4d6f9ec6b1" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/Dobre_praktyki_programowania.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Dobre_praktyki_programowania.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/endpoint.py" beforeDir="false" afterPath="$PROJECT_DIR$/API/endpoint.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/consumer_sqlite.py" beforeDir="false" afterPath="$PROJECT_DIR$/consumer_sqlite.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/producer_sqlite.py" beforeDir="false" afterPath="$PROJECT_DIR$/producer_sqlite.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queue.csv" beforeDir="false" afterPath="$PROJECT_DIR$/queue.csv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,26 +48,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python tests.pytest in test_api_endpoint.py.executor": "Run",
-    "Python tests.pytest in test_auth.py.executor": "Run",
-    "Python.consumer.executor": "Run",
-    "Python.create_db.executor": "Run",
-    "Python.database.executor": "Run",
-    "Python.endpoint.executor": "Run",
-    "Python.load_data.executor": "Run",
-    "Python.models.executor": "Run",
-    "Python.producer.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "queues__on__files",
-    "settings.editor.selected.configurable": "pyconsole"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python tests.pytest in test_api_endpoint.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest in test_auth.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python.consumer.executor&quot;: &quot;Run&quot;,
+    &quot;Python.create_db.executor&quot;: &quot;Run&quot;,
+    &quot;Python.database.executor&quot;: &quot;Run&quot;,
+    &quot;Python.endpoint.executor&quot;: &quot;Run&quot;,
+    &quot;Python.endpoints.executor&quot;: &quot;Run&quot;,
+    &quot;Python.load_data.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.models.executor&quot;: &quot;Run&quot;,
+    &quot;Python.producer.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;api__rabbitmq&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;pyconsole&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -79,5 +86,8 @@
       <updated>1757011838963</updated>
     </task>
     <servers />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="*.db" />
   </component>
 </project>
