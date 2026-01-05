@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  service_a:
+    build: ./service_a
+    ports:
+      - "5000:5000"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  service_b:
+    build: ./service_b
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      service_a:
+        condition: service_started
+    restart: unless-stopped
+
+  service_producer:
+    build: ./service_producer
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    restart: "no"
